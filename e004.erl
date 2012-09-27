@@ -1,3 +1,4 @@
+% Problem 4
 -module(e004).
 -export([solve/0]).
 
@@ -6,7 +7,6 @@ is_palindrome_integer(N) ->
     L =:= lists:reverse(L).
 
 find_palindrome(N, M) ->
-    io:format("~p, ~p~n",[N, M]),
     Product = N * M,
     case is_palindrome_integer(Product) of
 	true ->
@@ -19,21 +19,5 @@ find_palindrome(N, M) ->
 		    find_palindrome(N, M - 1)
 	    end		
     end.
-
 solve() ->
     find_palindrome(999, 999).
-
-%999*999
-%999*998
-%999*997
-
-%998*998
-%998*997
-%998*996
-
-%997*997
-%997*996
-%997*995
-
-%996*996
-%996*
