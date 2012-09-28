@@ -4,28 +4,43 @@
 -define(MAX, 500000000).
 
 solve() ->
-	Primes = array:new([{size,?MAX},{fixed,true},{default,true}]),
-	P = gen_primes(Primes, 2, round(math:sqrt(?MAX-1)), ?MAX-1),
-	solve(P, ?MAX - 1).
+    Primes = array:new([{size,?MAX},{fixed,true},{default,true}]),
+    P = gen_primes(Primes, 2, round(math:sqrt(?MAX-1)), ?MAX-1),
+    solve(P, ?MAX - 1).
 
-solve(Primes, 0) ->
-	ok;
-solve(Primes, Index) ->
-	case array:get(Index, Primes) of
-		true ->
-			io:format("~p~n", [Index]),
-			solve(Primes, Index - 1);
-		false ->
-			solve(Primes, Index - 1)
-	end.
+factors(Primes, P, 1) ->
+    [];
+factors(Primes, P, I) ->
+    case array:get(P, Primes) andalso P rem I =:= 0 of
+	true ->
+	    [I|factors(Primes, P div I, math:sqrt(P div I))];
+	false ->
+	    factors(Primes, P, I - 1)
+    end.
+	    
 
-%	TriangleNumber = lists:sum(lists:seq(1, N)),
-%	case TriangleNumber > 500 of
+%first chek if prime
+%otherwise check all primes <= swrt(N) if found prime add list
+%solve(Primes, 0) ->
+%    ok;
+%solve(Primes, Index) ->
+%	case array:get(Index, Primes) of
 %		true ->
-%			TriangleNumber;
+%			io:format("~p~n", [Index]),
+%			solve(Primes, Index - 1);
 %		false ->
-%			solve(N + 1)
+%			solve(Primes, Index - 1)
 %	end.
+ solve(Primes, N) ->   
+    TriangleNumber = lists:sum(lists:seq(1, N)),
+    Factors = factors(TriangleNumber, Trianglenumber),
+    io:format("~p~n",).
+ %   case factors(TriangleNumber) > 500 of
+ %  	true ->
+%	    TriangleNumber;
+%	false ->
+%	    solve(N + 1)
+ %   end.
 
 
 gen_primes(Primes, Index, MaxSqrt, _Max) when Index > MaxSqrt ->
