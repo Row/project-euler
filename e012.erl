@@ -33,8 +33,8 @@ factors(Primes, P, I) ->
 %	end.
  solve(Primes, N) ->   
     TriangleNumber = lists:sum(lists:seq(1, N)),
-    Factors = factors(TriangleNumber, Trianglenumber),
-    io:format("~p~n",).
+    Factors = factors(TriangleNumber, TriangleNumber),
+    io:format("~p~n",[Factors]).
  %   case factors(TriangleNumber) > 500 of
  %  	true ->
 %	    TriangleNumber;
