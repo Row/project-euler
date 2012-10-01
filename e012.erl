@@ -1,75 +1,90 @@
 %,Problem,12
 -module(e012).
--export([solve/0]).
--define(MAX, 100000).
+-export([solve/0, is_prime/1]).
+-define(MAX, 10000).
+
+is_prime(P) ->
+    R = round(math:sqrt(P)),
+    is_prime(P, R).
+
+is_prime(_P, 1) ->
+    true;
+is_prime(P, N) when P rem N =:= 0 ->
+    false;
+is_prime(P, N) ->
+    is_prime(P, N - 1).
+	
+factors(1) ->
+	[];
+factors(N) ->
+	case is_prime(N) of
+		true ->
+			[N];
+		false ->
+			factors(N, N - 1)
+	end.
+
+factors(_N, 1) ->
+	[];
+factors(N, 2) ->
+	[2|factors(N div 2)];
+factors(N, D) when N rem 2 =:= 1 andalso N rem D =:= 0 ->
+	case is_prime(D) of
+		true ->
+	    	[D|factors(N div D)];
+		false ->
+	    	factors(N, D - 1)
+    end;
+factors(N, D) ->
+	factors(N, D - 1).
 
 
-
-factors(_Primes, 1, _N) ->
-    [];
-factors(Primes, P, I) ->
-    %io:format("i: ~p~n",[I]),
-    case array:get(I, Primes) andalso P rem I =:= 0 of
-	true ->
-	    [I|factors(Primes, P div I, P div I)];
-	false ->
-	    factors(Primes, P, I - 1)
-    end.
 	    
+triangle_num(X) ->
+	round(0.5 * X * (X + 1)).
 
-%first chek if prime
-%otherwise check all primes <= swrt(N) if found prime add list
-%solve(Primes, 0) ->
-%    ok;
-%solve(Primes, Index) ->
-%	case array:get(Index, Primes) of
-%		true ->
-%			io:format("~p~n", [Index]),
-%			solve(Primes, Index - 1);
-%		false ->
-%			solve(Primes, Index - 1)
+count_val(L, V) ->
+	count_val(L, V, 0, []).
 
-%	end.
+count_val([],_V, Sum, Acc) ->
+	{Sum, Acc};
+count_val([V|T], V, Sum, Acc) ->
+	count_val(T, V, Sum + 1, Acc);
+count_val([H|T], V, Sum, Acc) ->
+	count_val(T, V, Sum, [H|Acc]).
+
+count_pow([]) ->
+	[];
+count_pow([H|T]) ->
+	{Count, T1} = count_val(T, H),
+	[2 + Count|count_pow(T1)]. % 1 for H and Algo + 1
+
+product([]) ->
+	1;
+product([H|T]) ->
+	H * product(T).
+
 solve() ->
-    TriangleNumber = lists:sum(lists:seq(1, ?MAX+1)),
-    Primes = array:new([{size,TriangleNumber},{fixed,true},{default,true}]),
-    P = gen_primes(Primes, 2, math:sqrt(TriangleNumber), TriangleNumber),
-    io:format("~p",[P]),
-    solve(P, ?MAX - 1).
+	A = array:new(),
+    solve(A, ?MAX).
 
- solve(Primes, N) ->   
-    TriangleNumber = lists:sum(lists:seq(1, N)),
-    Factors = factors(Primes, TriangleNumber, TriangleNumber),
+ solve(N) ->   
+    TriangleNumber = triangle_num(N),
+    Factors = factors(TriangleNumber),
+    Divisors = product(count_pow(Factors)),
     p(Factors),
-    io:format(" = ~p~n",[TriangleNumber]).
+    io:format(" = ~p, n = ~p, divisors = ~p~n",[TriangleNumber, N, Divisors]),
+    case Divisors > 500 of
+    	true ->
+    		TriangleNumber;
+		false ->
+			solve(N + 1)
+	end.
  
 p([H]) ->
 	io:format("~p", [H]);
 p([H|T]) ->
 	io:format("~p * ", [H]),
 	p(T).
-
- %   case factors(TriangleNumber) > 500 of
- %  	true ->	
-%	    TriangleNumber;
-%	false ->
-%	    solve(N + 1)
- %   end.
-
-
-gen_primes(Primes, Index, MaxSqrt, _Max) when Index > MaxSqrt ->
-	Primes;
-gen_primes(Primes, Index, MaxSqrt, Max) ->
-	case array:get(Index, Primes) of
-		true ->
-			gen_primes(gen_primes_inner(Primes, Index, Index, Max), Index+1, MaxSqrt, Max);
-		false ->
-			gen_primes(Primes, Index+1, MaxSqrt, Max)
-	end.
-
-gen_primes_inner(Primes, Index, IndexInner, Max) when Index * IndexInner >= Max ->
-	Primes;
-gen_primes_inner(Primes, Index, IndexInner, Max) ->
-	gen_primes_inner(array:set(Index * IndexInner, false, Primes), Index, IndexInner+1, Max).
 
 	
