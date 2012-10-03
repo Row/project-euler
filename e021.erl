@@ -20,7 +20,7 @@ d(N) ->
 amicable_pairs_below(_A, 0) ->
     0;
 amicable_pairs_below(0, B) ->
-    amicable_pairs_below(10000, B - 1);
+    amicable_pairs_below(B - 2, B - 1);
 amicable_pairs_below(A, B) when A =/= B ->
     SA = d(A),
     SB = d(B),
@@ -36,4 +36,6 @@ amicable_pairs_below(A, B) ->
     
 solve() ->
     N = 10000,
-    amicable_pairs_below(N , N).
+    %% Seq = lists:N
+    %% L = [{A, B} || A <- ]
+    amicable_pairs_below(N-1,N).
