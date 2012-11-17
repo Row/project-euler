@@ -1,0 +1,5 @@
+Project Euler with Erlang
+
+My code to solve problems at: http://projecteuler.net/
+
+All solutions in this repository are done with Erlang, because it is fun, not becuase Erlang is the obvious choice to solve the problem at hand.
