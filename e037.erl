@@ -14,13 +14,25 @@ solve(Solutions, Candidate) ->
 	    solve(Solutions, Candidate + 2)
     end.
 
+
 all_prime(N) when N < 10 ->
   is_prime(N);
 all_prime(N) ->
   is_prime(N) andalso 
-  is_prime(N div 10) andalso 
-  is_prime(remove_most_sig(N)).
+  lsgn_primes(N div 10) andalso
+  msgn_primes(remove_most_sig(N)).
 
+
+lsgn_primes(N) when N < 10 ->
+    is_prime(N);
+lsgn_primes(N) ->  
+    is_prime(N) andalso lsgn_primes(N div 10).
+
+
+msgn_primes(N) when N < 10 ->
+    is_prime(N);
+msgn_primes(N) ->  
+    is_prime(N) andalso msgn_primes(remove_most_sig(N)).
 
 remove_most_sig(N) ->
     remove_most_sig(N, N, 1).
