@@ -14,7 +14,7 @@ perms(L)  ->
 
 solve() ->
     Candidates = [[$9 | L] || L <- perms("87654321")],
-    solve(["918237645"]).
+    solve(Candidates).
 
 solve([]) ->
     no_solution;
@@ -23,6 +23,7 @@ solve([Candidate|Candidates]) ->
 	true ->
 	    Candidate;
 	false ->
+	    io:format("~p~n", [Candidate]),
 	    solve(Candidates)
     end.
 
@@ -34,6 +35,8 @@ is_sol(Candidate, Candidate, _Term, 0, _NU) ->
 is_sol(Candidate, _PartSol, Candidate, _N, _NU) ->
     false;
 is_sol(_Candidate, _PartSol, _Term, 0, _NU) ->
+    false;
+is_sol(_Candidate, _PartSol, _Term, _N, NU) when NU > 20 ->
     false;
 is_sol(_Candidate, PartSol, _Term, _N, _NU) when length(PartSol) >= 9 ->
     false;
@@ -49,14 +52,16 @@ is_sol(Candidate, PartSol, Term, N, NU) ->
 	    NewPartSol = list_product(Term, N) ++ PartSol,
 	    is_sol(Candidate, NewPartSol, Term, N - 1, NU);
 	false ->
-	    case is_sol(Candidate, "", "9", NU + 1, NU + 1) of
+	    case is_sol(Candidate, "", Term, NU + 1, NU + 1) of
 		true ->
 		    true;
 		false ->
 		    NewTerm = take_term(Candidate, Term),
-		    is_sol(Candidate, "9", NewTerm, NU, NU)
+		    is_sol(Candidate, "", NewTerm, NU, NU)
 	    end
     end.	     
+
+
 
 list_product(Term, N) ->
     Product = list_to_integer(Term) * N,
@@ -68,5 +73,5 @@ take_term(Candidate, CurrentTerm) ->
 
 is_sol_test() ->
     ?assert(is_sol("918273645")),
-    ?assert(is_sol("918237645")).
+    ?assert(not is_sol("918237645")).
     
