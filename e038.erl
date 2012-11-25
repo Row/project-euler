@@ -2,11 +2,6 @@
 -export([solve/0]).
 -include_lib("eunit/include/eunit.hrl").
 
-perms([]) -> 
-    [[]];
-perms(L)  -> 
-    [[H|T] || H <- L, T <- perms(L--[H])].
-
 solve() ->
     Candidates = [ 900000000 + list_to_integer(L) || L <- perms("87654321")],
     solve(Candidates).
@@ -16,32 +11,36 @@ solve([]) ->
 solve([Candidate|Candidates]) ->	     
    case is_solution(Candidate) of
        true ->
-	   Candidate;
+	       Candidate;
        false ->
-	   io:format("~p~n", [Candidate]),
-	   solve(Candidates)
+	       solve(Candidates)
    end.
+
+
+perms([]) -> 
+    [[]];
+perms(L)  -> 
+    [[H|T] || H <- L, T <- perms(L--[H])].
+
 
 is_solution(Candidate) ->
     is_solution(Candidate, 9, Candidate, 9).
 
-is_solution(_Candidate, _Term, 0, _N) ->
+is_solution(_Candidate, _Term, 0, 0) ->
     true;
 is_solution(Candidate, Term, _Rest, 0) ->
-    is_solution(Candidate, concat_one(Candidate, Term), Candidate, 20);
-is_solution(_Candidate, Term, _Rest, _N) when  Term > 1000 ->
-    false;
-is_solution(_Candidate, _Term, Rest, _N) when Rest < 0 ->
+    is_solution(Candidate, concat_one(Candidate, Term), Candidate, 9);
+is_solution(_Candidate, Term, _Rest, _N) when  Term > 9999 ->
     false;
 is_solution(Candidate, Term, Rest, N) ->
     Product = N * Term,
-    io:format("~p, ~p, ~p, ~p, ~p~n", [Candidate, Term, Product, Rest, N]),
     case check_suffix(Rest, Product) of
        false ->
 	    is_solution(Candidate, Term, Candidate, N - 1);
        NewRest ->
-	    is_solution(Candidate, Term, NewRest, N)
+	    is_solution(Candidate, Term, NewRest, N - 1)
    end.
+
 
 check_suffix(Rest, 0) ->
     Rest;
@@ -53,10 +52,12 @@ check_suffix(Rest, Term) ->
 	    false
     end.
 
+
 concat_one(Candidate, Term) ->
     concat_nth(Candidate, 
 	       Term, 
 	       length_int(Candidate) - length_int(Term)).
+
 
 concat_nth(Candidate, Term, 1) ->
     Term * 10 + Candidate rem 10;
@@ -73,14 +74,11 @@ length_int(N, L) ->
     length_int(N div 10, L + 1).
 
 
-
 %% Tests
 length_int_test() ->
     ?assertEqual(3, length_int(456)),
     ?assertEqual(1, length_int(4)),    
     ?assertEqual(1, length_int(0)).
-
-
 
 check_term_test() ->
     ?assertEqual(123, check_suffix(123456, 456)),
