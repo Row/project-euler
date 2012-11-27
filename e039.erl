@@ -8,30 +8,43 @@
 % C > B
 
 solve() ->
-    solve(1000).
-
-solve(1) ->
-    0; 
-solve(P) ->
+    P = 1000,
     A = lists:seq(2, P),
     B = A,
     C = A,
-    max(length(solve(A, B, C, P)), solve(P - 1)).
+    AB = perms(A, B),
+    Sets = [{X, Y, Z} || {X, Y} <- AB, Z <- C,
+			 X < Z,
+			 Y < Z,
+			 pyth_prop(X, Y, Z)
+           ],
+    solve(Sets, P).
+
+solve(Sets, P) ->
+    solve(Sets, P, {P + 1, 0}).
+
+solve(_Sets, 1, Max) ->
+    Max; 
+solve(Sets , P, Max = {_MaxP, MaxLength}) ->
+    LengthSolution = length(solve1(Sets, P)),
+    case MaxLength < LengthSolution of
+	true ->
+	    solve(Sets, P - 1, {P, LengthSolution});
+	false ->
+	    solve(Sets, P - 1, Max)
+    end.
 
     
-solve(A, B, C, P) ->
-    Sets = [{X, Y, Z} || X <- A, Y <- B, Z <- C,
-            X < Z,
-            Y < Z,
-            X < Y,
-            sum_prop(X, Y, Z, P),
-            pyth_prop(X, Y, Z)
-           ],
-    io:format("~p, ~p~n", [P, Sets]),
-    Sets.
+solve1(Sets, P) ->
+    [{X, Y, Z} || {X, Y, Z} <- Sets,
+		   sum_prop(X, Y, Z, P)
+     ].
+
+perms(A, B) -> 
+    [{X, Y} || X <- A, Y <- B, X < Y].
 
 sum_prop(A, B, C, P) ->
     A + B + C =:= P.
 
 pyth_prop(A, B, C) ->
-    A*A + B*B =:= C*C.
+    A * A + B * B =:= C * C.
